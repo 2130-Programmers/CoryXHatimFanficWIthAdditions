@@ -263,7 +263,7 @@ public class AlphaMotors extends SubsystemBase {
             //} else if (desiredTargetTicks(targetX, targetY) == 0){
             //    directionalMultiplier = 1;
             }else{
-                //Change this to 0 later for testing
+                //Change this to 0 later for testing-cory
                 directionalMultiplier = 1;
             }
 
@@ -337,11 +337,13 @@ public class AlphaMotors extends SubsystemBase {
     }
 
 
-    // new things for testing
+    // The new swerve computations for angle and final speed
     public void drive(double speed, double angle, double mod) {
 
         double revamp = speed;
         
+        //making it so speed can only return 1 or less* the mod because x/x = 1 and 
+        //the abs makes the direction maintain true abs(x)/-x= -1
         if(1 < Math.abs(speed)){
             revamp = (speed/Math.abs(speed))*mod;
         }else{
@@ -350,13 +352,15 @@ public class AlphaMotors extends SubsystemBase {
 
         driveMotor.set(ControlMode.PercentOutput, revamp);
 
+        //converting the angle from the new swerve function into terms communicable with the rest of the code
         if(angle < 0){
+            //This sets the angle into positive by flipping the value on the origin then multiplying to get it to terms of 420
             pointSet = (Math.abs(1 + angle) + 1) * 210;
         }else{
             pointSet = angle * 210;
         }
 
-
+        //shoves the angle into the rest of the code
         pointToTarget(pointSet);    
 
         deleteMe = pointSet;

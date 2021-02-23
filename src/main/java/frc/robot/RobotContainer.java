@@ -7,6 +7,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
@@ -42,6 +43,7 @@ public class RobotContainer {
   private final AimSetpoionts aimSetpoionts = new AimSetpoionts(aimingSubsystem);
 
 
+  public static final ADXRS450_Gyro gyro = new ADXRS450_Gyro();
   /**
    * The Driver Joystick declaration and the button definitions associated with
    * it.

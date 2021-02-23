@@ -34,6 +34,8 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
+    
+    RobotContainer.gyro.calibrate();
   }
 
   /**
@@ -100,7 +102,7 @@ public class Robot extends TimedRobot {
     }
     
     RobotContainer.driveTrain.findAllZeros();
-  }
+    }
 
   /**
    * This function is called periodically during autonomous.
@@ -166,6 +168,8 @@ public class Robot extends TimedRobot {
     SmartDashboard.putBoolean("dpad right from class", Dpad.pright);
 
     Dpad.isDpadActive();
+
+    SmartDashboard.putNumber("gyro angle", RobotContainer.gyro.getAngle());
   }
 
   @Override

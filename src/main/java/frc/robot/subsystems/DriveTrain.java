@@ -83,34 +83,43 @@ public class DriveTrain extends SubsystemBase {
             //creation of a deadzone
             if(rightX>=.05 || rightX<=-.05){
                 turnyThingy = rightX;
+                RobotContainer.gyro.reset();
             }else{
-                turnyThingy = 0;
+                // activates gyro
+                turnyThingy = gyration();
             }
         }
 
+        // a b c and d are all sides of the robot and creates wheels as the sides. FR wheel is wheel B D for example
         double a = leftX - turnyThingy * (l / r);
         double b = leftX + turnyThingy * (l / r);
         double d = (leftY - turnyThingy * (w / r));
         double c = (leftY + turnyThingy * (w / r));
 
+        //calculates the speed based on the vector of where side x wants to go to where y does
         double FRDesiredSpeed = (Math.sqrt((b*b)+(d*d)));
         double RRDesiredSpeed = (Math.sqrt((a*a)+(d*d)));
         double FLDesiredSpeed = (Math.sqrt((b*b)+(c*c))*-1);
         double RLDesiredSpeed = (Math.sqrt((a*a)+(c*c))*-1);
 
-
+        //      This causes big probelems with zeroing because the values are still returning some random value for certain cases and zeroing doesn't occure properly
+        //                           \/
+        // atan2 returns null essentially when the values are zero so we check for that here
         if(leftX==0 && leftY == 0 && turnyThingy == 0){
             FRAngle = 0;
             FLAngle = 0;
             RRAngle = 0;
             RLAngle = 0;
         }else{
+            //calculating the angles based off of side x and y 
         FRAngle = (Math.atan2(b, d) / Math.PI);
         RRAngle = (Math.atan2(a, d) / Math.PI);
         FLAngle = Math.atan2(b, c) / Math.PI;
         RLAngle = Math.atan2(a, c) / Math.PI;
         }
 
+        // puts the values into the AlphaMotor Class which is defined as a motor 
+        //Puts these three parameters into a function called drive
         motorFL.drive(FLDesiredSpeed, FLAngle, mod);
         motorFR.drive(FRDesiredSpeed, FRAngle, mod);
         motorRR.drive(RRDesiredSpeed, RRAngle, mod);
@@ -141,19 +150,36 @@ public class DriveTrain extends SubsystemBase {
         motorRR.zeroEncoderBasedOnProx();
     }
 
+    // driving with limelight
     public double limes(){
         double x = RobotContainer.sensorsSubsystem.x/25;
         double dire = Math.abs(x)/x;
         //point where power starts decreasing
         double tstart = .5;
         //minimum power to turn
-        double e = .06;
+        double e = .04;
         //linear term
         double w = 1;
         //exponential variable
         double g = (1-w*tstart-e)/(tstart*tstart);
 
         return dire*(g*(x*x))+w*x+e*dire;
+    }
+
+    //attempting to correct for drift while driving using gryo
+    public double gyration(){
+        double ang = RobotContainer.gyro.getAngle()/-90;
+        double dir = Math.abs(ang)/ang;
+        //change tstart to lower values to narrow gradient of 0% to 100%
+        double tstart = 1;
+        //Change e to higher values to increase error from zero
+        double e = .04;
+        //directly effects g 
+        double w = 1;
+
+        double g = (1-w*tstart-e)/(tstart*tstart);
+
+        return dir*(g*(ang*ang))+w*ang+e*dir;
     }
 }
 
