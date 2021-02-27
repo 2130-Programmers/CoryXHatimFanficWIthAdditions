@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.subsystems.AlphaMotors;
+import frc.robot.subsystems.Dpad;
 
 
 /**
@@ -85,7 +85,7 @@ public class Robot extends TimedRobot {
 
     SmartDashboard.putNumber("modi", RobotContainer.modifierSub.bestMod);
     
-    SmartDashboard.putNumber("Dpad # pressed", RobotContainer.dpadValue());
+    //SmartDashboard.putNumber("Dpad # pressed", RobotContainer.dpadValue());
     SmartDashboard.putNumber("potentiometer", RobotContainer.sensorsSubsystem.linearEncoderValue);
   }
 
@@ -164,10 +164,10 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("potentiometer", RobotContainer.sensorsSubsystem.linearEncoderValue);
 
     SmartDashboard.putBoolean("fire", RobotContainer.aimingSubsystem.ready);
-    SmartDashboard.putNumber("Dpad # pressed", RobotContainer.dpadValue());
-    SmartDashboard.putBoolean("dpad right from class", Dpad.pright);
 
-    Dpad.isDpadActive();
+    Dpad.runPeriodic();
+    SmartDashboard.putBoolean("Dpad # pressed", RobotContainer.sensorsSubsystem.getDPad());
+    SmartDashboard.putBoolean("dpad right from class", Dpad.rightPOV.get());
 
     SmartDashboard.putNumber("gyro angle", RobotContainer.gyro.getAngle());
   }

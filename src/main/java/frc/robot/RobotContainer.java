@@ -12,7 +12,6 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.commands.*;
@@ -45,16 +44,14 @@ public class RobotContainer {
 
   public static final ADXRS450_Gyro gyro = new ADXRS450_Gyro();
   /**
-   * The Driver Joystick declaration and the button definitions associated with
-   * it.
+   * The Driver Joystick declaration and the button definitions associated with it.
    */
 
   public static final Joystick driverJoystick = new Joystick(0);
 
   private final static JoystickButton aimWithALime = new JoystickButton(driverJoystick, Constants.driverButtonLB);
   /**
-   * The Operator Joystick declaration and the button definitions associated with
-   * it.
+   * The Operator Joystick declaration and the button definitions associated with it.
    */
 
   public static final Joystick operatorJoystick = new Joystick(1);
@@ -76,16 +73,12 @@ public class RobotContainer {
 
   // cardinal directions on the dpad and they work in angles starting with 0 on
   // top
-  private final static POVButton zoneThree = new POVButton(operatorJoystick, 90);
-  private final static POVButton zoneFour = new POVButton(operatorJoystick, 270);
-  private final static POVButton bottomZone = new POVButton(operatorJoystick, 180);
-  private final static POVButton up = new POVButton(operatorJoystick, 0);
+  public final static POVButton rightPOV = new POVButton(operatorJoystick, 90);
+  public final static POVButton leftPOV = new POVButton(operatorJoystick, 270);
+  public final static POVButton downPOV = new POVButton(operatorJoystick, 180);
+  public final static POVButton upPOV = new POVButton(operatorJoystick, 0);
 
-  /*
-  Dpad is a class I created that serves as a button that activats when any of the documented direction of the dpad is pressed
-  It is loacted below constants
-  */
-  private final static Dpad dpad = new Dpad(up, bottomZone, zoneFour, zoneThree);
+  public final static Dpad dpad = new Dpad(upPOV, downPOV, leftPOV, rightPOV);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -116,7 +109,7 @@ public class RobotContainer {
 
     dpad.whenPressed(aimSetpoionts, true);
 
-    zoneThree.whenPressed(aimSetpoionts, true);
+    rightPOV.whenPressed(aimSetpoionts, true);
   }
 
   /**
@@ -139,58 +132,45 @@ public class RobotContainer {
   public static double getOperatorAxis(int axis) {
      if (axis == 1 || axis == 5) {
          return -operatorJoystick.getRawAxis(axis);
-        } else {
+     } else {
          return operatorJoystick.getRawAxis(axis);
-        }
-    }
+     }
+  }
 
-    public static boolean limeValue(){
+  public static boolean limeValue(){
       return aimWithALime.get();
     }
 
-    //operator button values
+  //operator button values
 
-    public static boolean handlerPositionValue() {
+  public static boolean handlerPositionValue() {
         return changeHandlerPositionButton.get();
       }
     
-      public static boolean climbButtonValue() {
-        return runWinchButton.get();
-      }
-    
-      public static boolean launcherButVal(){
-        return windLauncherUpButton.get();
-      }
-    
-      public static boolean stopWindin(){
-        return windLauncherDownButton.get();
-      }
-    
-      public static boolean lowerButVal(){
-        return lowerLauncherButton.get();
-      }
-      public static boolean raiseButVal(){
-        return raiseLauncherButton.get();
-      }
-    
-      public static boolean disengageStopBallSoneloidButtonValue() {
-        return disengageStopBallSoneloidButton.get();
-      }
+  public static boolean climbButtonValue() {
+    return runWinchButton.get();
+  }
 
-      //returns which dpad side is getting pressed.
-      public static int dpadValue(){
-        if(up.get()){
-          return 3;
-        }else if(bottomZone.get()){
-          return 1;
-        }else if(zoneThree.get()){
-          return 2;
-        }else if(zoneFour.get()){
-          return 4;
-        }else{
-          return 0;
-        }
-      }
+  public static boolean launcherButVal(){
+    return windLauncherUpButton.get();
+  }
+
+  public static boolean stopWindin(){
+    return windLauncherDownButton.get();
+  }
+
+  public static boolean lowerButVal(){
+    return lowerLauncherButton.get();
+  }
+  public static boolean raiseButVal(){
+    return raiseLauncherButton.get();
+  }
+
+  public static boolean disengageStopBallSoneloidButtonValue() {
+    return disengageStopBallSoneloidButton.get();
+  }
+
+
 
 }
 

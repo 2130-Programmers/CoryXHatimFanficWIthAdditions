@@ -12,6 +12,8 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Robot;
+import frc.robot.RobotContainer;
 
 public class SensorsSubsystem extends SubsystemBase {
 
@@ -49,8 +51,24 @@ public class SensorsSubsystem extends SubsystemBase {
         area = ta.getDouble(0.0);
 
         linearEncoderValue = linearEncoder.get();
-
     }
 
-    
+    public boolean getDPad() {
+        return RobotContainer.dpad.get();
+    }
+
+    public int dPadValue() {
+        //returns which dpad side is getting pressed.
+        if (RobotContainer.upPOV.get()) {
+          return 3;
+        } else if (RobotContainer.downPOV.get()) {
+          return 1;
+        } else if (RobotContainer.rightPOV.get()) {
+          return 2;
+        } else if (RobotContainer.leftPOV.get()) {
+          return 4;
+        } else {
+          return 0;
+        }
+    }
 }

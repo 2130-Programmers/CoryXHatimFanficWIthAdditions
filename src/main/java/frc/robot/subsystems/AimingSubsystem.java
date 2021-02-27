@@ -87,28 +87,30 @@ public class AimingSubsystem extends SubsystemBase {
     // This is a case to get which dpad button you are pressing and it runs a zone method for each case
 
     public void wayToComplicatedMeansForActuallyDoingThisPleaseHelp(){
-        switch(RobotContainer.dpadValue()){
-            case 1:
-            ready = true;
-            break;
-            case 2:
-
-            if(height>= .35 && height<= .4){
-                ready = true;
-            }else{
-                aimingMotor.set(ControlMode.PercentOutput, 
-                (height-.395)/Math.abs(height-.395)*.3);
-                ready = false;
-            }
-
-            break;
+        switch(RobotContainer.sensorsSubsystem.dPadValue()){
+            case 1: // The case 1 and case 3 were both the same, so this just makes it so both dpad values will run the
+                    // code in case 3
             case 3:
-            ready = true;
-            break;
+                ready = true;
+                break;
+            case 2:
+                if(height>= .35 && height<= .4){
+                    ready = true;
+                }else{
+                    aimingMotor.set(ControlMode.PercentOutput,
+                    (height-.395)/Math.abs(height-.395)*.3);
+                    ready = false;
+                }
+                break;
             case 4:
-            zoneFour();
-            break;
+                zoneFour();
+                break;
+            default: // This is a good common practice for case statements, its like an else statement, if everything
+                     // else fails, the statement should do something
+                throw new IllegalStateException("Unexpected value: " + RobotContainer.sensorsSubsystem.dPadValue());
         }
+        //TODO: You know this runs every time right? The break statements only leave the switch statement, which then
+        // runs this line of code, so no matter what you give in the switch, ready will always be false
         ready = false;
     }
 }
