@@ -8,9 +8,8 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
@@ -25,7 +24,7 @@ public class AlphaMotors extends SubsystemBase {
 
     private double STICK_ERROR = Constants.STICK_ERROR;
 
-    private TalonSRX driveMotor;
+    private TalonFX driveMotor;
     private TalonSRX rotationMotor; // The directional motor for the use of the
                                     // drive motor.
 
@@ -39,8 +38,6 @@ public class AlphaMotors extends SubsystemBase {
     public double encoderRemainingValue;
 
     public boolean inMethod;
-
-    private final double MAX_VOLTS = 4.95;
 
     public double deleteMe;
 
@@ -79,7 +76,7 @@ public class AlphaMotors extends SubsystemBase {
          */
 
         rotationMotor = new TalonSRX(rotate); //
-        driveMotor = new TalonSRX(speed);
+        driveMotor = new TalonFX(speed);
 
         rotationEncoder = new Encoder(encSourceA, encSourceB);
         rotationProx = new DigitalInput(proxChannel);
@@ -105,20 +102,6 @@ public class AlphaMotors extends SubsystemBase {
      *         quadrant.
      */
 
-    private int quadrant(double x, double y) {
-        if (x > 0 && y > 0) {
-            return 1;
-        } else if (x < 0 && y > 0) {
-            return 2;
-        } else if (x < 0 && y < 0) {
-            return 3;
-        } else if (x > 0 && y < 0) {
-            return 4;
-        } else {
-            throw new IllegalArgumentException("Neither X or Y may lie on an axis.");
-        }
-    }
-
     /**
      * Calulates the position desired in terms of encoder ticks.
      * 
@@ -126,66 +109,6 @@ public class AlphaMotors extends SubsystemBase {
      * @param y - (double) The value of the y axis of the joystick.
      * @return (long) The value in ticks that corresponds to the inputs.
      */
-
-    private long desiredTargetTicks(double x, double y) {
-
-        /*
-         * Math Explanation
-         * 
-         * Math = (((Math.PI/2) - (Math.atan(y/x)))/(Math.PI/2))
-         * 
-         * The process finds theta "(Math.atan(y/x))", the roation in radians. Then
-         * rotates it up by 90 degrees "(Math.PI/2) -", in order to put "0" as north. It
-         * then converts that to a ratio "/(Math.PI/2)", the calulated position / the
-         * total position, to later be multiplied by the number of ticks in 90 degrees
-         * of movement "Constants.ENCODER_TICKS_IN_QUADRANT".
-         */
-
-        double multiplier = 0.0; // Initialize multiplier
-
-        if (x >= -STICK_ERROR && x <= STICK_ERROR && y >= -STICK_ERROR && y <= STICK_ERROR) {
-
-            multiplier = 0; // if stick is at center, then desired = 0
-
-        } else if (x >= STICK_ERROR && y >= -STICK_ERROR && y <= STICK_ERROR) {
-
-            multiplier = 1; // if stick is due east, then desired = number of
-                            // ticks in quadrant * 1
-
-        } else if (x <= -STICK_ERROR && y >= -STICK_ERROR && y <= STICK_ERROR) {
-
-            multiplier = 3; // if stick is due west, then desired = number of
-                            // ticks in quadrant * 3
-
-        } else if (y >= STICK_ERROR && x >= -STICK_ERROR && x <= STICK_ERROR) {
-
-            multiplier = 0; // if stick is due north, then desired = 0
-
-        } else if (y <= -STICK_ERROR && x >= -STICK_ERROR && x <= STICK_ERROR) {
-
-            multiplier = 2; // if stick is due south, then desired = number of
-                            // ticks in quadrant * 2
-
-        } else {
-            int curr_quad = quadrant(x, y);
-            if (curr_quad == 1 || curr_quad == 4) {
-                // if stick is in quadrants 1 or 4 it uses the direct ratio
-
-                multiplier = (((Math.PI / 2) - (Math.atan(y / x))) / (Math.PI / 2));
-
-            } else if (curr_quad == 2 || curr_quad == 3) {
-                // if stick is in quadrants 2 or 3 it uses the ratio + 2, to
-                // rotate by 180 degrees
-
-                multiplier = (2 + ((Math.PI / 2) - (Math.atan(y / x))) / (Math.PI / 2));
-
-            }
-        }
-
-        directionTarget = Math.round(Constants.ENCODER_TICKS_IN_QUADRANT * multiplier);
-        return directionTarget;
-
-    }
 
     /**
      * Grabs the current encoder count (in ticks) and reseting after crossing 1
@@ -364,5 +287,22 @@ public class AlphaMotors extends SubsystemBase {
         pointToTarget(pointSet);    
 
         deleteMe = pointSet;
+    }
+
+    public void coryAuto(double speed, double angle, double mod){
+        
+        double revamp = speed;
+        //making it so speed can only return 1 or less* the mod because x/x = 1 and 
+        //the abs makes the direction maintain true abs(x)/-x= -1
+        if(1 < Math.abs(speed)){
+            revamp = (speed/Math.abs(speed))*mod;
+        }else{
+            revamp = (speed)*mod;
+        }
+        driveMotor.set(ControlMode.PercentOutput, revamp);
+
+        pointSet = angle*1.6777777777;
+
+        pointToTarget(pointSet);
     }
 }

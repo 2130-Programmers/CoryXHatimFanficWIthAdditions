@@ -27,6 +27,8 @@ public class IntakeSubsystem extends SubsystemBase {
     private DoubleSolenoid intakeSol;
     private Solenoid feedSol;
 
+    private boolean oof = true;
+
     public IntakeSubsystem() {
 
         intakeMotor = new TalonSRX(10);
@@ -41,8 +43,9 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public void runIntake() {
-        intakeMotor.set(ControlMode.PercentOutput,
-                RobotContainer.getOperatorAxis(3) - RobotContainer.getOperatorAxis(2));
+        if(oof){
+            intakeMotor.set(ControlMode.PercentOutput, RobotContainer.getOperatorAxis(0));
+        }
     }
 
     public void stopIntake() {
@@ -51,10 +54,12 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public void flopIntakeOut() {
         intakeSol.set(Value.kForward);
+        oof = true;
     }
 
     public void flopIntakeIn() {
         intakeSol.set(Value.kReverse);
+        oof = false;
     }
 
     public void leaveIntakeNeutral() {

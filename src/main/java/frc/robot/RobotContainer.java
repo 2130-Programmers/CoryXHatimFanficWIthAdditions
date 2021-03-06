@@ -27,6 +27,8 @@ import frc.robot.subsystems.*;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
+  public static int lastPressed = 0;
+
   public final static DriveTrain driveTrain = new DriveTrain();
   public final static ModifierSub modifierSub = new ModifierSub();
   public final static LauncherSubsystem launcherSubsystem = new LauncherSubsystem();
@@ -41,7 +43,11 @@ public class RobotContainer {
   private final AimingCommandDown aimingCommandDown = new AimingCommandDown(aimingSubsystem);
   private final DisengageStopBallSolenoid disengageStopBallSolenoid = new DisengageStopBallSolenoid(intakeSubsystem);
   private final AimSetpoionts aimSetpoionts = new AimSetpoionts(aimingSubsystem);
+  private final SwitchPipeCommand switchPipeCommand = new SwitchPipeCommand(sensorsSubsystem);
+  private final FlopIntakeInCommand flopIntakeInCommand = new FlopIntakeInCommand(intakeSubsystem);
+  private final FlopIntakeOutCommand flopIntakeOutCommand = new FlopIntakeOutCommand(intakeSubsystem);
 
+  private final TurnTest turnTest = new TurnTest(driveTrain);
 
   public static final ADXRS450_Gyro gyro = new ADXRS450_Gyro();
   /**
@@ -52,6 +58,8 @@ public class RobotContainer {
   public static final Joystick driverJoystick = new Joystick(0);
 
   private final static JoystickButton aimWithALime = new JoystickButton(driverJoystick, Constants.driverButtonLB);
+  private final static JoystickButton switchPipelines = new JoystickButton(driverJoystick, Constants.driverButtonStart);
+  private final static JoystickButton circleTest = new JoystickButton(driverJoystick, Constants.driverButtonBack);
   /**
    * The Operator Joystick declaration and the button definitions associated with
    * it.
@@ -59,20 +67,15 @@ public class RobotContainer {
 
   public static final Joystick operatorJoystick = new Joystick(1);
 
-  private final static JoystickButton changeHandlerPositionButton = new JoystickButton(operatorJoystick,
-      Constants.operatorButtonRightJoyClick);
-  private final static JoystickButton windLauncherUpButton = new JoystickButton(operatorJoystick,
-      Constants.operatorButtonX);
-  private final static JoystickButton windLauncherDownButton = new JoystickButton(operatorJoystick,
-      Constants.operatorButtonY);
-  private final static JoystickButton lowerLauncherButton = new JoystickButton(operatorJoystick,
-      Constants.operatorButtonLB);
-  private final static JoystickButton raiseLauncherButton = new JoystickButton(operatorJoystick,
-      Constants.operatorButtonRB);
-  private final static JoystickButton runWinchButton = new JoystickButton(operatorJoystick,
-      Constants.operatorButtonBack);
-  private final static JoystickButton disengageStopBallSoneloidButton = new JoystickButton(operatorJoystick,
-      Constants.operatorButtonLeftJoyClick);
+  private final static JoystickButton changeHandlerPositionButton = new JoystickButton(operatorJoystick, Constants.operatorButtonRightJoyClick);
+  private final static JoystickButton windLauncherUpButton = new JoystickButton(operatorJoystick, Constants.operatorButtonX);
+  private final static JoystickButton windLauncherDownButton = new JoystickButton(operatorJoystick, Constants.operatorButtonY);
+  private final static JoystickButton lowerLauncherButton = new JoystickButton(operatorJoystick, Constants.operatorButtonLB);
+  private final static JoystickButton raiseLauncherButton = new JoystickButton(operatorJoystick, Constants.operatorButtonRB);
+  private final static JoystickButton runWinchButton = new JoystickButton(operatorJoystick, Constants.operatorButtonBack);
+  private final static JoystickButton disengageStopBallSoneloidButton = new JoystickButton(operatorJoystick, Constants.operatorButtonLeftJoyClick);
+  private final JoystickButton flopIntakeInButton = new JoystickButton(operatorJoystick, Constants.operatorButtonA);
+  private final JoystickButton flopIntakeOutButton = new JoystickButton(operatorJoystick, Constants.operatorButtonB);
 
   // cardinal directions on the dpad and they work in angles starting with 0 on
   // top
@@ -82,9 +85,9 @@ public class RobotContainer {
   private final static POVButton up = new POVButton(operatorJoystick, 0);
 
   /*
-  Dpad is a class I created that serves as a button that activats when any of the documented direction of the dpad is pressed
-  It is loacted below constants
-  */
+   * Dpad is a class I created that serves as a button that activats when any of
+   * the documented direction of the dpad is pressed It is loacted below constants
+   */
   private final static Dpad dpad = new Dpad(up, bottomZone, zoneFour, zoneThree);
 
   /**
@@ -97,6 +100,7 @@ public class RobotContainer {
     driveTrain.setDefaultCommand(plsWork);
     modifierSub.setDefaultCommand(modChanger);
     intakeSubsystem.setDefaultCommand(disengageStopBallSolenoid);
+    
   }
 
   /**
@@ -112,11 +116,20 @@ public class RobotContainer {
     raiseLauncherButton.whenPressed(aimingCommand, true);
     lowerLauncherButton.whenPressed(aimingCommandDown, true);
 
+    flopIntakeInButton.whenPressed(flopIntakeInCommand, true);
+    flopIntakeOutButton.whenPressed(flopIntakeOutCommand, true);
+
     disengageStopBallSoneloidButton.whenPressed(disengageStopBallSolenoid, true);
 
     dpad.whenPressed(aimSetpoionts, true);
 
     zoneThree.whenPressed(aimSetpoionts, true);
+    zoneFour.whenPressed(aimSetpoionts, true);
+    up.whenPressed(aimSetpoionts, true);
+    bottomZone.whenPressed(aimSetpoionts, true);
+
+    switchPipelines.whenPressed(switchPipeCommand, true);
+    circleTest.whenPressed(turnTest, true);
   }
 
   /**
@@ -128,6 +141,7 @@ public class RobotContainer {
     // An ExampleCommand will run in autonomous
     return null;
   }
+
   public static double getDriverAxis(int axis) {
     if (axis == 1 || axis == 5) {
       return -driverJoystick.getRawAxis(axis);
@@ -137,60 +151,60 @@ public class RobotContainer {
   }
 
   public static double getOperatorAxis(int axis) {
-     if (axis == 1 || axis == 5) {
-         return -operatorJoystick.getRawAxis(axis);
-        } else {
-         return operatorJoystick.getRawAxis(axis);
-        }
+    if (axis == 1 || axis == 5) {
+      return -operatorJoystick.getRawAxis(axis);
+    } else {
+      return operatorJoystick.getRawAxis(axis);
     }
+  }
 
-    public static boolean limeValue(){
-      return aimWithALime.get();
-    }
+  public static boolean limeValue() {
+    return aimWithALime.get();
+  }
 
-    //operator button values
+  // operator button values
 
-    public static boolean handlerPositionValue() {
-        return changeHandlerPositionButton.get();
-      }
-    
-      public static boolean climbButtonValue() {
-        return runWinchButton.get();
-      }
-    
-      public static boolean launcherButVal(){
-        return windLauncherUpButton.get();
-      }
-    
-      public static boolean stopWindin(){
-        return windLauncherDownButton.get();
-      }
-    
-      public static boolean lowerButVal(){
-        return lowerLauncherButton.get();
-      }
-      public static boolean raiseButVal(){
-        return raiseLauncherButton.get();
-      }
-    
-      public static boolean disengageStopBallSoneloidButtonValue() {
-        return disengageStopBallSoneloidButton.get();
-      }
+  public static boolean handlerPositionValue() {
+    return changeHandlerPositionButton.get();
+  }
 
-      //returns which dpad side is getting pressed.
-      public static int dpadValue(){
-        if(up.get()){
-          return 3;
+  public static boolean climbButtonValue() {
+    return runWinchButton.get();
+  }
+
+  public static boolean launcherButVal() {
+    return windLauncherUpButton.get();
+  }
+
+  public static boolean stopWindin() {
+    return windLauncherDownButton.get();
+  }
+
+  public static boolean lowerButVal() {
+    return lowerLauncherButton.get();
+  }
+
+  public static boolean raiseButVal() {
+    return raiseLauncherButton.get();
+  }
+
+  public static boolean disengageStopBallSoneloidButtonValue() {
+    return disengageStopBallSoneloidButton.get();
+  }
+
+  // returns which dpad side is getting pressed.
+  public static int dpadValue() {
+
+    if (up.get()) {
+      lastPressed = 1;
         }else if(bottomZone.get()){
-          return 1;
+          lastPressed = 2;
         }else if(zoneThree.get()){
-          return 2;
+          lastPressed = 4;
         }else if(zoneFour.get()){
-          return 4;
-        }else{
-          return 0;
+          lastPressed = 3;
         }
+        return lastPressed;
       }
-
 }
 

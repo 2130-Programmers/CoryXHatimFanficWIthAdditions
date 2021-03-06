@@ -35,7 +35,7 @@ public class Robot extends TimedRobot {
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
     
-    RobotContainer.gyro.calibrate();
+   // RobotContainer.gyro.calibrate();
   }
 
   /**
@@ -59,6 +59,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void disabledInit() {
+    System.out.println("ahhhhhhhhhhhhhhhhhhh");
   }
 
   @Override
@@ -161,7 +162,8 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("anglefirst", RobotContainer.driveTrain.deleteMeMore);
     SmartDashboard.putNumber("convert to long", RobotContainer.driveTrain.ahh);
     SmartDashboard.putNumber("modi", RobotContainer.modifierSub.bestMod);
-    SmartDashboard.putNumber("potentiometer", RobotContainer.sensorsSubsystem.linearEncoderValue);
+    SmartDashboard.putNumber("potentiometer Slider", Math.abs(RobotContainer.sensorsSubsystem.linearEncoderValue-1));
+    SmartDashboard.putNumber("potentiometer", Math.abs(RobotContainer.sensorsSubsystem.linearEncoderValue-1));
 
     SmartDashboard.putBoolean("fire", RobotContainer.aimingSubsystem.ready);
     SmartDashboard.putNumber("Dpad # pressed", RobotContainer.dpadValue());

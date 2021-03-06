@@ -19,6 +19,9 @@ public class SensorsSubsystem extends SubsystemBase {
     private NetworkTableEntry tx;
     private NetworkTableEntry ty;
     private NetworkTableEntry ta;
+    
+    
+    private static  NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
 
     public double x;
     public double y;
@@ -26,6 +29,8 @@ public class SensorsSubsystem extends SubsystemBase {
     public double linearEncoderValue;
 
     public AnalogPotentiometer linearEncoder;
+
+    public boolean pipebool = true;
 
     /**
      * Creates a new SensorsSubsystem.
@@ -48,9 +53,20 @@ public class SensorsSubsystem extends SubsystemBase {
         y = ty.getDouble(0.0);
         area = ta.getDouble(0.0);
 
-        linearEncoderValue = linearEncoder.get();
+        //linearEncoderValue = linearEncoder.get();
 
     }
 
+    public void layThePipe(){
+        if(pipebool == true){
+            NetworkTableEntry pipelineEntry = table.getEntry("pipeline");
+            pipelineEntry.setNumber(0);
+            pipebool = false;
+        }else{
+            NetworkTableEntry pipelineEntry = table.getEntry("pipeline");
+            pipelineEntry.setNumber(1);
+            pipebool = true;
+        }
+    }
     
 }

@@ -37,15 +37,15 @@ public class AimingSubsystem extends SubsystemBase {
     }
 
     public void raiseIntake() {
-        if(RobotContainer.sensorsSubsystem.linearEncoder.get() > .1){
-        aimingMotor.set(ControlMode.PercentOutput, .3);
+        if(RobotContainer.sensorsSubsystem.linearEncoder.get() > .12){
+        aimingMotor.set(ControlMode.PercentOutput, .5);
      }else{
          aimingMotor.set(ControlMode.PercentOutput, 0);
      }
     }
 
     public void lowerIntake() {
-        aimingMotor.set(ControlMode.PercentOutput, -.3);
+        aimingMotor.set(ControlMode.PercentOutput, -.5);
     }
 
     public void setMinMax() {
@@ -57,14 +57,13 @@ public class AimingSubsystem extends SubsystemBase {
         aimingMotor.set(ControlMode.PercentOutput, 0);
     }
 
-    //zoneThree and zoneFour put the launcher in the right direction for the right zone
-
+    //zoneThree and zoneFour put the launcher in the right direction for the right zone 
     public void zoneThree(){
-        if(height>= .35 && height<= .4){
+        if(height>= .39 && height<= .405){
             ready = true;
         }else{
             aimingMotor.set(ControlMode.PercentOutput, 
-            (height-.395)/Math.abs(height-.395)*.3);
+            (height-.395)/Math.abs(height-.395)*.5);
             ready = false;
         }
     }
@@ -73,9 +72,25 @@ public class AimingSubsystem extends SubsystemBase {
         if(height>= .69 && height<= .71){
             ready = true;
         }else{
-        aimingMotor.set(ControlMode.PercentOutput, 
-        (height-.7)/Math.abs(height-.7)*.3);
+        aimingMotor.set(ControlMode.PercentOutput, (height-.7)/Math.abs(height-.7)*.5);
         ready = false;
+        }
+    }
+
+    public void zoneOne(){
+        if(height>= .42 && height<= .44){
+            ready = true;
+        }else{
+           aimingMotor.set(ControlMode.PercentOutput, (height-.43)/Math.abs(height-.43)*.5);
+           ready = false; 
+        }
+    }
+    public void zoneTwo(){
+        if(height<=.095){
+            ready = true;
+        }else{
+            aimingMotor.set(ControlMode.PercentOutput, .5);
+            ready = false;
         }
     }
 
@@ -87,28 +102,28 @@ public class AimingSubsystem extends SubsystemBase {
     // This is a case to get which dpad button you are pressing and it runs a zone method for each case
 
     public void wayToComplicatedMeansForActuallyDoingThisPleaseHelp(){
+        // if(RobotContainer.dpadValue() == 1){
+        //     zoneOne();
+        // }else if(RobotContainer.dpadValue() == 2){
+        //     zoneThree();
+        // }else if(RobotContainer.dpadValue() == 3){
+        //     zoneTwo();
+        // }else if(RobotContainer.dpadValue() == 4){
+        //     zoneFour();
+        // }
         switch(RobotContainer.dpadValue()){
             case 1:
-            ready = true;
+            zoneOne();
             break;
             case 2:
-
-            if(height>= .35 && height<= .4){
-                ready = true;
-            }else{
-                aimingMotor.set(ControlMode.PercentOutput, 
-                (height-.395)/Math.abs(height-.395)*.3);
-                ready = false;
-            }
-
+            zoneThree();
             break;
             case 3:
-            ready = true;
+            zoneTwo();
             break;
             case 4:
             zoneFour();
             break;
         }
-        ready = false;
     }
 }

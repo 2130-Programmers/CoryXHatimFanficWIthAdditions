@@ -49,6 +49,9 @@ public class DriveTrain extends SubsystemBase {
 
     public double turnyThingy = 0;
 
+    public double circleX = 0;
+    public boolean circleDone = false;
+
     public DriveTrain() {
         motorFL = new AlphaMotors(2, 1, 12, 10, 0);
         motorFR = new AlphaMotors(4, 3, 18, 17, 1);
@@ -83,10 +86,8 @@ public class DriveTrain extends SubsystemBase {
             //creation of a deadzone
             if(rightX>=.05 || rightX<=-.05){
                 turnyThingy = rightX;
-                RobotContainer.gyro.reset();
             }else{
-                // activates gyro
-                turnyThingy = gyration();
+                turnyThingy = 0;
             }
         }
 
@@ -112,10 +113,10 @@ public class DriveTrain extends SubsystemBase {
             RLAngle = 0;
         }else{
             //calculating the angles based off of side x and y 
-        FRAngle = (Math.atan2(b, d) / Math.PI);
-        RRAngle = (Math.atan2(a, d) / Math.PI);
-        FLAngle = Math.atan2(b, c) / Math.PI;
-        RLAngle = Math.atan2(a, c) / Math.PI;
+            FRAngle = (Math.atan2(b, d) / Math.PI);
+            RRAngle = (Math.atan2(a, d) / Math.PI);
+            FLAngle = Math.atan2(b, c) / Math.PI;
+            RLAngle = Math.atan2(a, c) / Math.PI;
         }
 
         // puts the values into the AlphaMotor Class which is defined as a motor 
@@ -168,18 +169,32 @@ public class DriveTrain extends SubsystemBase {
 
     //attempting to correct for drift while driving using gryo
     public double gyration(){
-        double ang = RobotContainer.gyro.getAngle()/-90;
-        double dir = Math.abs(ang)/ang;
-        //change tstart to lower values to narrow gradient of 0% to 100%
-        double tstart = 1;
-        //Change e to higher values to increase error from zero
-        double e = .04;
-        //directly effects g 
-        double w = 1;
+        // Make this a PID
+        return 0;
+    }
 
-        double g = (1-w*tstart-e)/(tstart*tstart);
+    /**
+    * @param leftOrRight - (boolea) If you are going right put a true and if the direction is left put a false
+   */
+    public void circle(boolean leftOrRight){
+        double angle = 0;
+        if(circleX<=1.4){
+            circleX+=.006;
+            circleDone = false;
+            angle = ((.124*Math.sin(14.2*circleX+1.6)+1.8*circleX-.2)/1.6);
+        }else{
+            circleDone = true;
+            circleX = 0;
+        }
 
-        return dir*(g*(ang*ang))+w*ang+e*dir;
+        if(leftOrRight == false){
+            angle = Math.abs(angle-2);
+        }
+
+        motorFL.drive(.3*-1, angle, 1);
+        motorFR.drive(.3, angle, 1);
+        motorRR.drive(.3, angle, 1);
+        motorRL.drive(.3*-1, angle, 1);
     }
 }
 
