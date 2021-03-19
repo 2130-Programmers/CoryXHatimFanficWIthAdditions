@@ -35,7 +35,7 @@ public class Robot extends TimedRobot {
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
     
-   // RobotContainer.gyro.calibrate();
+    RobotContainer.gyro.calibrate();
   }
 
   /**
@@ -101,6 +101,7 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
+    RobotContainer.gyro.reset();
     
     RobotContainer.driveTrain.findAllZeros();
     }
@@ -121,6 +122,7 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+    RobotContainer.gyro.reset();
 
     RobotContainer.driveTrain.findAllZeros();
   }
@@ -157,21 +159,26 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("angle FR", RobotContainer.driveTrain.motorFR.deleteMe);
 
     SmartDashboard.putNumber("tx", RobotContainer.sensorsSubsystem.x);
+    SmartDashboard.putNumber("ty", RobotContainer.sensorsSubsystem.y);
+    SmartDashboard.putNumber("ta", RobotContainer.sensorsSubsystem.area);
+    SmartDashboard.putNumber("tvert", RobotContainer.sensorsSubsystem.h);
+    SmartDashboard.putNumber("whore", RobotContainer.sensorsSubsystem.v);
+    SmartDashboard.putNumber("offset", RobotContainer.sensorsSubsystem.offset);
       
     RobotContainer.driveTrain.zeroAllEncodersBasedOnProx();
     SmartDashboard.putNumber("anglefirst", RobotContainer.driveTrain.deleteMeMore);
     SmartDashboard.putNumber("convert to long", RobotContainer.driveTrain.ahh);
     SmartDashboard.putNumber("modi", RobotContainer.modifierSub.bestMod);
-    SmartDashboard.putNumber("potentiometer Slider", Math.abs(RobotContainer.sensorsSubsystem.linearEncoderValue-1));
+    SmartDashboard.putNumber("potentiometer Slider", RobotContainer.sensorsSubsystem.linearEncoderValue);
     SmartDashboard.putNumber("potentiometer", Math.abs(RobotContainer.sensorsSubsystem.linearEncoderValue-1));
 
-    SmartDashboard.putBoolean("fire", RobotContainer.aimingSubsystem.ready);
+    
     SmartDashboard.putNumber("Dpad # pressed", RobotContainer.dpadValue());
     SmartDashboard.putBoolean("dpad right from class", Dpad.pright);
 
     Dpad.isDpadActive();
 
-    SmartDashboard.putNumber("gyro angle", RobotContainer.gyro.getAngle());
+    SmartDashboard.putNumber("gyro angle", RobotContainer.driveTrain.gyration());
   }
 
   @Override

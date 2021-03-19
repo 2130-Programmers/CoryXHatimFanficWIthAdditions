@@ -23,7 +23,7 @@ public class ModChanger extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    modifierSub.finalMod(.3,.9);
+    modifierSub.finalMod(.4,1);
   }
 
   // Called once the command ends or is interrupted.

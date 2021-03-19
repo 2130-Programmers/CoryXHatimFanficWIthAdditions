@@ -289,20 +289,8 @@ public class AlphaMotors extends SubsystemBase {
         deleteMe = pointSet;
     }
 
-    public void coryAuto(double speed, double angle, double mod){
-        
-        double revamp = speed;
-        //making it so speed can only return 1 or less* the mod because x/x = 1 and 
-        //the abs makes the direction maintain true abs(x)/-x= -1
-        if(1 < Math.abs(speed)){
-            revamp = (speed/Math.abs(speed))*mod;
-        }else{
-            revamp = (speed)*mod;
-        }
-        driveMotor.set(ControlMode.PercentOutput, revamp);
-
-        pointSet = angle*1.6777777777;
-
-        pointToTarget(pointSet);
+    public void staticAngle(double speed, double angle){
+        pointToTarget(angle);
+        driveMotor.set(ControlMode.PercentOutput, speed);
     }
 }

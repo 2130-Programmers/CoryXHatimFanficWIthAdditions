@@ -19,6 +19,9 @@ public class SensorsSubsystem extends SubsystemBase {
     private NetworkTableEntry tx;
     private NetworkTableEntry ty;
     private NetworkTableEntry ta;
+    public NetworkTableEntry tvert;
+    private NetworkTableEntry thor;
+    private NetworkTableEntry ts;
     
     
     private static  NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
@@ -27,6 +30,9 @@ public class SensorsSubsystem extends SubsystemBase {
     public double y;
     public double area;
     public double linearEncoderValue;
+    public double h;
+    public double v;
+    public double offset;
 
     public AnalogPotentiometer linearEncoder;
 
@@ -41,8 +47,11 @@ public class SensorsSubsystem extends SubsystemBase {
         tx = limelightTable.getEntry("tx");
         ty = limelightTable.getEntry("ty");
         ta = limelightTable.getEntry("ta");
+        tvert = limelightTable.getEntry("tvert");
+        thor = limelightTable.getEntry("thor");
+        ts = limelightTable.getEntry("ts");
 
-        linearEncoder = new AnalogPotentiometer(0);
+        linearEncoder = new AnalogPotentiometer(2);
     }
 
     @Override
@@ -52,8 +61,11 @@ public class SensorsSubsystem extends SubsystemBase {
         x = tx.getDouble(0.0);
         y = ty.getDouble(0.0);
         area = ta.getDouble(0.0);
+        h = tvert.getDouble(0.0);
+        v = thor.getDouble(0.0);
+        offset = ts.getDouble(0.0);
 
-        //linearEncoderValue = linearEncoder.get();
+        linearEncoderValue = linearEncoder.get();
 
     }
 

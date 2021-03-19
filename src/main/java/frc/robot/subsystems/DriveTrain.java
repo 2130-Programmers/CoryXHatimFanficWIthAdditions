@@ -11,6 +11,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FollowerType;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
+import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Robot;
@@ -51,6 +52,7 @@ public class DriveTrain extends SubsystemBase {
 
     public double circleX = 0;
     public boolean circleDone = false;
+    
 
     public DriveTrain() {
         motorFL = new AlphaMotors(2, 1, 12, 10, 0);
@@ -78,24 +80,34 @@ public class DriveTrain extends SubsystemBase {
     public void moveSwerveAxis(double leftX, double leftY, double rightX) {
         leftY*=-1;
 
+        double toTheLane = 0;
         double mod = RobotContainer.modifierSub.bestMod;
 
         if(RobotContainer.limeValue()){
-            turnyThingy = limes();
+            // turnyThingy = limes();
+                if(5 > Math.abs(RobotContainer.sensorsSubsystem.x/25)){
+
+                    toTheLane = align();
+                }else{
+                    toTheLane = align();
+                }
+             RobotContainer.gyro.reset();
         }else{
             //creation of a deadzone
             if(rightX>=.05 || rightX<=-.05){
                 turnyThingy = rightX;
+                RobotContainer.gyro.reset();
             }else{
-                turnyThingy = 0;
+                turnyThingy = gyration();
             }
+            toTheLane = leftY;
         }
 
         // a b c and d are all sides of the robot and creates wheels as the sides. FR wheel is wheel B D for example
         double a = leftX - turnyThingy * (l / r);
         double b = leftX + turnyThingy * (l / r);
-        double d = (leftY - turnyThingy * (w / r));
-        double c = (leftY + turnyThingy * (w / r));
+        double d = (toTheLane - turnyThingy * (w / r));
+        double c = (toTheLane + turnyThingy * (w / r));
 
         //calculates the speed based on the vector of where side x wants to go to where y does
         double FRDesiredSpeed = (Math.sqrt((b*b)+(d*d)));
@@ -106,7 +118,7 @@ public class DriveTrain extends SubsystemBase {
         //      This causes big probelems with zeroing because the values are still returning some random value for certain cases and zeroing doesn't occure properly
         //                           \/
         // atan2 returns null essentially when the values are zero so we check for that here
-        if(leftX==0 && leftY == 0 && turnyThingy == 0){
+        if(leftX == 0  && leftY == 0 && turnyThingy == 0){
             FRAngle = 0;
             FLAngle = 0;
             RRAngle = 0;
@@ -154,6 +166,7 @@ public class DriveTrain extends SubsystemBase {
     // driving with limelight
     public double limes(){
         double x = RobotContainer.sensorsSubsystem.x/25;
+
         double dire = Math.abs(x)/x;
         //point where power starts decreasing
         double tstart = .5;
@@ -169,32 +182,52 @@ public class DriveTrain extends SubsystemBase {
 
     //attempting to correct for drift while driving using gryo
     public double gyration(){
-        // Make this a PID
-        return 0;
+        double gyro = RobotContainer.gyro.getAngle();
+
+        if(Math.abs(gyro/70)>.03){
+            return (gyro/-70)-(.03*(gyro/Math.abs(gyro)));
+        }else{
+            return 0;
+        }
+
     }
 
     /**
-    * @param leftOrRight - (boolea) If you are going right put a true and if the direction is left put a false
+    * @param leftOrRight - (boolean) If you are going right put a true and if the direction is left put a false
    */
     public void circle(boolean leftOrRight){
         double angle = 0;
-        if(circleX<=1.4){
-            circleX+=.006;
+        if(circleX<=1.5){
+            circleX+=.008;
             circleDone = false;
             angle = ((.124*Math.sin(14.2*circleX+1.6)+1.8*circleX-.2)/1.6);
         }else{
-            circleDone = true;
             circleX = 0;
+            circleDone = true;
         }
 
         if(leftOrRight == false){
             angle = Math.abs(angle-2);
         }
 
-        motorFL.drive(.3*-1, angle, 1);
-        motorFR.drive(.3, angle, 1);
-        motorRR.drive(.3, angle, 1);
-        motorRL.drive(.3*-1, angle, 1);
+        motorFL.drive(.35*-1, angle, 1);
+        motorFR.drive(.35, angle, 1);
+        motorRR.drive(.35, angle, 1);
+        motorRL.drive(.35*-1, angle, 1);
+    }
+    
+    public double align(){
+        double alignment = RobotContainer.sensorsSubsystem.offset;
+
+
+        if(alignment > -85 && alignment < -60){
+            return .4;
+        }else if(alignment < -5){
+            return .4;
+        }else{
+            return 0;
+        }
+
     }
 }
 

@@ -39,7 +39,7 @@ public final class Constants {
                                                        // per quad = 420 per revolution
     public static int LARGE_SWERVE_ROTATION_ERROR = 5; // These are modified if you expierence jitter, this value
                                                         // reduces how far the tire will spin at a fast speed
-    public static double SMALL_SWERVE_ROTATION_ERROR = 1; // This value is used as a hard stop, if the wheel gets within +-
+    public static double SMALL_SWERVE_ROTATION_ERROR = .5; // This value is used as a hard stop, if the wheel gets within +-
                                                        // this value it will stop the rotation
     public static double FAST_SWERVE_ROTATION_SPEED = 0.5;
     public static double SLOW_SWERVE_ROTATION_SPEED = 0.05;
@@ -47,18 +47,7 @@ public final class Constants {
     public static double dirMMaxRotationOutput = 1;
     public static double dirMMinRotationOutput = -1;
 
-    public static int strafeEasyModeButton = 5;
-    public static int pointTurnButon = 6;
-
     public static double pointSpeed = 0.2;
-
-    // -----------------------------------------------------------------------------\\
-    //                                                                              \\
-    // Handler Related Constants                                                    \\
-    //                                                                              \\
-    // -----------------------------------------------------------------------------\\
-
-    public static double handlerMotorSpeed = .1;
 
     // -----------------------------------------------------------------------------\\
     //                                                                              \\
