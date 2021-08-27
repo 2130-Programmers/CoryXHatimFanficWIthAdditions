@@ -49,9 +49,15 @@ public class DriveTrain extends SubsystemBase {
     public double RLAngle = 0;
 
     public double turnyThingy = 0;
+    public double toTheLane = 0;
 
     public double circleX = 0;
     public boolean circleDone = false;
+    public double capture = 0;
+    public boolean swath = true;
+    public double swathCap = 1;
+
+    public double invertTwo;
     
 
     public DriveTrain() {
@@ -78,42 +84,38 @@ public class DriveTrain extends SubsystemBase {
     }
 
     public void moveSwerveAxis(double leftX, double leftY, double rightX) {
-        leftY*=-1;
-
-        double toTheLane = 0;
+        leftY*=-invert(leftY, leftX);
+        leftX*=invert(leftY, leftX);
+        rightX*=invert(leftY, leftX);
         double mod = RobotContainer.modifierSub.bestMod;
 
-        if(RobotContainer.limeValue()){
-            // turnyThingy = limes();
-                if(5 > Math.abs(RobotContainer.sensorsSubsystem.x/25)){
+        invertTwo = invert(leftY, leftX);
 
-                    toTheLane = align();
-                }else{
-                    toTheLane = align();
-                }
+        if(RobotContainer.limeValue()){
+             turnyThingy = limes()*invert(leftY, leftX);
              RobotContainer.gyro.reset();
         }else{
             //creation of a deadzone
-            if(rightX>=.05 || rightX<=-.05){
+            if(Math.abs(rightX)>= .05){
                 turnyThingy = rightX;
                 RobotContainer.gyro.reset();
             }else{
-                turnyThingy = gyration();
+                turnyThingy = gyration()*invert(leftY, leftX); 
             }
-            toTheLane = leftY;
+            toTheLane = leftX;
         }
 
         // a b c and d are all sides of the robot and creates wheels as the sides. FR wheel is wheel B D for example
         double a = leftX - turnyThingy * (l / r);
         double b = leftX + turnyThingy * (l / r);
-        double d = (toTheLane - turnyThingy * (w / r));
-        double c = (toTheLane + turnyThingy * (w / r));
+        double d = (leftY - turnyThingy * (w / r));
+        double c = (leftY + turnyThingy * (w / r));
 
         //calculates the speed based on the vector of where side x wants to go to where y does
-        double FRDesiredSpeed = (Math.sqrt((b*b)+(d*d)));
-        double RRDesiredSpeed = (Math.sqrt((a*a)+(d*d)));
-        double FLDesiredSpeed = (Math.sqrt((b*b)+(c*c))*-1);
-        double RLDesiredSpeed = (Math.sqrt((a*a)+(c*c))*-1);
+        double FRDesiredSpeed = (Math.sqrt((b*b)+(d*d)))*invert(leftY, leftX);
+        double RRDesiredSpeed = (Math.sqrt((a*a)+(d*d)))*invert(leftY, leftX);
+        double FLDesiredSpeed = (Math.sqrt((b*b)+(c*c))*-1)*invert(leftY, leftX);
+        double RLDesiredSpeed = (Math.sqrt((a*a)+(c*c))*-1)*invert(leftY, leftX);
 
         //      This causes big probelems with zeroing because the values are still returning some random value for certain cases and zeroing doesn't occure properly
         //                           \/
@@ -163,29 +165,33 @@ public class DriveTrain extends SubsystemBase {
         motorRR.zeroEncoderBasedOnProx();
     }
 
+
+
     // driving with limelight
     public double limes(){
         double x = RobotContainer.sensorsSubsystem.x/25;
 
-        double dire = Math.abs(x)/x;
+        double dire = (Math.abs(x)/x)*invertTwo;
         //point where power starts decreasing
-        double tstart = .5;
+        double tstart = .8;
         //minimum power to turn
-        double e = .04;
+        double c = .03;
         //linear term
-        double w = 1;
+        double b = .5;
         //exponential variable
-        double g = (1-w*tstart-e)/(tstart*tstart);
+        double a = (.8-b*tstart-c)/(tstart*tstart);
 
-        return dire*(g*(x*x))+w*x+e*dire;
+        return (dire*(a*(x*x))+b*x+c*dire);
     }
+
+
 
     //attempting to correct for drift while driving using gryo
     public double gyration(){
         double gyro = RobotContainer.gyro.getAngle();
-
-        if(Math.abs(gyro/70)>.03){
-            return (gyro/-70)-(.03*(gyro/Math.abs(gyro)));
+      
+        if(Math.abs(gyro)/70>= .08){
+            return gyro/-70; 
         }else{
             return 0;
         }
@@ -217,17 +223,39 @@ public class DriveTrain extends SubsystemBase {
     }
     
     public double align(){
-        double alignment = RobotContainer.sensorsSubsystem.offset;
+        double alignment = Math.abs(RobotContainer.sensorsSubsystem.offset);
 
 
-        if(alignment > -85 && alignment < -60){
-            return .4;
-        }else if(alignment < -5){
-            return .4;
+        if(alignment < 88 && alignment > 60){
+            return .5;
+        }else if(alignment > 2 && alignment < 60){
+            return -.5;
         }else{
             return 0;
         }
+    }
 
+//This portion of the code makes it so when you press back on the joystick it will
+//go backwards instead of flipping the wheels all the way around.
+    public double invert(double axis, double otherAxis){
+       // This checks if the joystick is within a small range to see where it is going
+            if(.06>Math.abs(axis) && .06> Math.abs(otherAxis)){
+                capture = axis+.0000001;
+                //swath makes it run once
+                swath = true;
+                return 1;
+            }else{
+                if(swath){
+                    if(capture > 0){
+                        swath = false;
+                        swathCap = 1;
+                    }else{
+                        swath = false;
+                        swathCap = -1;
+                }
+            }
+            return swathCap;
+        }
     }
 }
 

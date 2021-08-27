@@ -36,6 +36,9 @@ public class Robot extends TimedRobot {
     m_robotContainer = new RobotContainer();
     
     RobotContainer.gyro.calibrate();
+
+    RobotContainer.launcherSubsystem.finalSpeed = 0;
+    RobotContainer.launcherSubsystem.inZoneFour = false;
   }
 
   /**
@@ -115,6 +118,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
+    RobotContainer.gyro.reset();
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
@@ -122,7 +126,6 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-    RobotContainer.gyro.reset();
 
     RobotContainer.driveTrain.findAllZeros();
   }
@@ -153,32 +156,36 @@ public class Robot extends TimedRobot {
     SmartDashboard.putBoolean("RR Prox", RobotContainer.driveTrain.motorRR.proxValue());
 
     
-    SmartDashboard.putNumber("angle RL", RobotContainer.driveTrain.motorRL.deleteMe);
-    SmartDashboard.putNumber("angle RR", RobotContainer.driveTrain.motorRR.deleteMe);
-    SmartDashboard.putNumber("angle FL", RobotContainer.driveTrain.motorFL.deleteMe);
-    SmartDashboard.putNumber("angle FR", RobotContainer.driveTrain.motorFR.deleteMe);
+    // SmartDashboard.putNumber("angle RL", RobotContainer.driveTrain.motorRL.deleteMe);
+    // SmartDashboard.putNumber("angle RR", RobotContainer.driveTrain.motorRR.deleteMe);
+    // SmartDashboard.putNumber("angle FL", RobotContainer.driveTrain.motorFL.deleteMe);
+    // SmartDashboard.putNumber("angle FR", RobotContainer.driveTrain.motorFR.deleteMe);
 
     SmartDashboard.putNumber("tx", RobotContainer.sensorsSubsystem.x);
     SmartDashboard.putNumber("ty", RobotContainer.sensorsSubsystem.y);
     SmartDashboard.putNumber("ta", RobotContainer.sensorsSubsystem.area);
     SmartDashboard.putNumber("tvert", RobotContainer.sensorsSubsystem.h);
-    SmartDashboard.putNumber("whore", RobotContainer.sensorsSubsystem.v);
-    SmartDashboard.putNumber("offset", RobotContainer.sensorsSubsystem.offset);
+    SmartDashboard.putNumber("thor", RobotContainer.sensorsSubsystem.v);
+    SmartDashboard.putNumber("offset", Math.abs(RobotContainer.sensorsSubsystem.offset));
       
     RobotContainer.driveTrain.zeroAllEncodersBasedOnProx();
     SmartDashboard.putNumber("anglefirst", RobotContainer.driveTrain.deleteMeMore);
     SmartDashboard.putNumber("convert to long", RobotContainer.driveTrain.ahh);
     SmartDashboard.putNumber("modi", RobotContainer.modifierSub.bestMod);
+
     SmartDashboard.putNumber("potentiometer Slider", RobotContainer.sensorsSubsystem.linearEncoderValue);
     SmartDashboard.putNumber("potentiometer", Math.abs(RobotContainer.sensorsSubsystem.linearEncoderValue-1));
 
-    
-    SmartDashboard.putNumber("Dpad # pressed", RobotContainer.dpadValue());
-    SmartDashboard.putBoolean("dpad right from class", Dpad.pright);
+    SmartDashboard.putBoolean("feed sol command is active", RobotContainer.feedSolSub.feedSolMethodIsWorking);
+
+    SmartDashboard.putNumber("leftOrRight", RobotContainer.driveTrain.toTheLane);
 
     Dpad.isDpadActive();
 
+    SmartDashboard.putNumber("capture", RobotContainer.driveTrain.capture);
+    SmartDashboard.putBoolean("swath", RobotContainer.driveTrain.swath);
     SmartDashboard.putNumber("gyro angle", RobotContainer.driveTrain.gyration());
+    SmartDashboard.putNumber("Turn Variable", RobotContainer.driveTrain.turnyThingy);
   }
 
   @Override

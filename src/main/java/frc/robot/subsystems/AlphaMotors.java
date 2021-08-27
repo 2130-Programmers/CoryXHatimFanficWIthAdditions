@@ -197,7 +197,6 @@ public class AlphaMotors extends SubsystemBase {
             } else {
                 stopMotors();
             }
-
         }
     }
 

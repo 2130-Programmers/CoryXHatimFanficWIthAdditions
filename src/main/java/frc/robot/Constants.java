@@ -41,7 +41,7 @@ public final class Constants {
                                                         // reduces how far the tire will spin at a fast speed
     public static double SMALL_SWERVE_ROTATION_ERROR = .5; // This value is used as a hard stop, if the wheel gets within +-
                                                        // this value it will stop the rotation
-    public static double FAST_SWERVE_ROTATION_SPEED = 0.5;
+    public static double FAST_SWERVE_ROTATION_SPEED = 0.6;
     public static double SLOW_SWERVE_ROTATION_SPEED = 0.05;
 
     public static double dirMMaxRotationOutput = 1;

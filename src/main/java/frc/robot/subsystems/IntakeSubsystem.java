@@ -25,16 +25,15 @@ public class IntakeSubsystem extends SubsystemBase {
     private TalonSRX intakeMotor;
 
     private DoubleSolenoid intakeSol;
-    private Solenoid feedSol;
 
     private boolean oof = true;
+
 
     public IntakeSubsystem() {
 
         intakeMotor = new TalonSRX(10);
 
         intakeSol = new DoubleSolenoid(3, 4);
-        feedSol = new Solenoid(1);
     }
 
     @Override
@@ -64,22 +63,6 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public void leaveIntakeNeutral() {
         intakeSol.set(Value.kOff);
-    }
-
-    public void releaseBalls() {
-        feedSol.set(true);
-    }
-
-    public void tightenBalls() {
-        feedSol.set(false);
-    }
-
-    public void masterOfBalls(){
-        if(RobotContainer.operatorJoystick.getRawAxis(3)>.9){
-            releaseBalls();
-        }else{
-            tightenBalls();
-        }
     }
 
 }

@@ -8,6 +8,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
@@ -35,13 +36,14 @@ public class RobotContainer {
   public final static SensorsSubsystem sensorsSubsystem = new SensorsSubsystem();
   public final static AimingSubsystem aimingSubsystem = new AimingSubsystem();
   public final static IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
+  public final static FeedSolSub feedSolSub = new FeedSolSub();
 
   private final PlsWork plsWork = new PlsWork(driveTrain);
   private final ModChanger modChanger = new ModChanger(modifierSub);
   private final HeresTheWindUp heresTheWindUp = new HeresTheWindUp(launcherSubsystem);
   private final AimingCommand aimingCommand = new AimingCommand(aimingSubsystem);
   private final AimingCommandDown aimingCommandDown = new AimingCommandDown(aimingSubsystem);
-  private final DisengageStopBallSolenoid disengageStopBallSolenoid = new DisengageStopBallSolenoid(intakeSubsystem);
+  private final DisengageStopBallSolenoid disengageStopBallSolenoid = new DisengageStopBallSolenoid(feedSolSub);
   private final AimSetpoionts aimSetpoionts = new AimSetpoionts(aimingSubsystem);
   private final SwitchPipeCommand switchPipeCommand = new SwitchPipeCommand(sensorsSubsystem);
   private final FlopIntakeInCommand flopIntakeInCommand = new FlopIntakeInCommand(intakeSubsystem);
@@ -99,7 +101,7 @@ public class RobotContainer {
 
     driveTrain.setDefaultCommand(plsWork);
     modifierSub.setDefaultCommand(modChanger);
-    intakeSubsystem.setDefaultCommand(disengageStopBallSolenoid);
+    feedSolSub.setDefaultCommand(disengageStopBallSolenoid);
     
   }
 
@@ -129,7 +131,7 @@ public class RobotContainer {
     bottomZone.whenPressed(aimSetpoionts, true);
 
     switchPipelines.whenPressed(switchPipeCommand, true);
-    circleTest.whenPressed(turnTest, true);
+    //circleTest.whenPressed(turnTest, true);<----------------------------------------------- Commented out because it was a test and no longer needed
   }
 
   /**
@@ -206,5 +208,6 @@ public class RobotContainer {
         }
         return lastPressed;
       }
+
 }
 
