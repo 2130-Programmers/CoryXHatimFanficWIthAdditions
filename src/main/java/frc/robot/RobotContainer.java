@@ -37,6 +37,7 @@ public class RobotContainer {
   public final static AimingSubsystem aimingSubsystem = new AimingSubsystem();
   public final static IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
   public final static FeedSolSub feedSolSub = new FeedSolSub();
+  public final static Climber climber = new Climber();
 
   private final PlsWork plsWork = new PlsWork(driveTrain);
   private final ModChanger modChanger = new ModChanger(modifierSub);
@@ -48,6 +49,11 @@ public class RobotContainer {
   private final SwitchPipeCommand switchPipeCommand = new SwitchPipeCommand(sensorsSubsystem);
   private final FlopIntakeInCommand flopIntakeInCommand = new FlopIntakeInCommand(intakeSubsystem);
   private final FlopIntakeOutCommand flopIntakeOutCommand = new FlopIntakeOutCommand(intakeSubsystem);
+  private final flopIntakeOutForAutonomous flopIntakeOutForAutonomous = new flopIntakeOutForAutonomous(intakeSubsystem);
+  private final ToggleClimberLatch toggleClimberLatch = new ToggleClimberLatch(climber);
+  private final ContractClimber contractClimber = new ContractClimber(climber);  
+  private final ReleaseClimber releaseClimber = new ReleaseClimber(climber);
+  private final StopClimberWinch stopClimberWinch = new StopClimberWinch(climber);
 
   private final TurnTest turnTest = new TurnTest(driveTrain);
 
@@ -74,10 +80,12 @@ public class RobotContainer {
   private final static JoystickButton windLauncherDownButton = new JoystickButton(operatorJoystick, Constants.operatorButtonY);
   private final static JoystickButton lowerLauncherButton = new JoystickButton(operatorJoystick, Constants.operatorButtonLB);
   private final static JoystickButton raiseLauncherButton = new JoystickButton(operatorJoystick, Constants.operatorButtonRB);
-  private final static JoystickButton runWinchButton = new JoystickButton(operatorJoystick, Constants.operatorButtonBack);
   private final static JoystickButton disengageStopBallSoneloidButton = new JoystickButton(operatorJoystick, Constants.operatorButtonLeftJoyClick);
-  private final JoystickButton flopIntakeInButton = new JoystickButton(operatorJoystick, Constants.operatorButtonA);
-  private final JoystickButton flopIntakeOutButton = new JoystickButton(operatorJoystick, Constants.operatorButtonB);
+  private final static JoystickButton flopIntakeInButton = new JoystickButton(operatorJoystick, Constants.operatorButtonA);
+  private final static JoystickButton flopIntakeOutButton = new JoystickButton(operatorJoystick, Constants.operatorButtonB);
+  private final static JoystickButton backButton = new JoystickButton(driverJoystick, Constants.driverButtonBack);
+  private final static JoystickButton runWinchInButton = new JoystickButton(driverJoystick, Constants.driverButtonLB);
+  private final static JoystickButton runWinchOutButton = new JoystickButton(driverJoystick, Constants.driverButtonRB);
 
   // cardinal directions on the dpad and they work in angles starting with 0 on
   // top
@@ -113,6 +121,14 @@ public class RobotContainer {
    */
 
   private void configureButtonBindings() {
+    backButton.whenPressed(toggleClimberLatch, true);
+
+    runWinchInButton.whenPressed(contractClimber, true);
+    runWinchOutButton.whenPressed(releaseClimber, true);
+
+    runWinchInButton.whenReleased(stopClimberWinch, true);
+    runWinchOutButton.whenReleased(stopClimberWinch, true);
+
     windLauncherUpButton.whenPressed(heresTheWindUp, true);
 
     raiseLauncherButton.whenPressed(aimingCommand, true);
@@ -168,10 +184,6 @@ public class RobotContainer {
 
   public static boolean handlerPositionValue() {
     return changeHandlerPositionButton.get();
-  }
-
-  public static boolean climbButtonValue() {
-    return runWinchButton.get();
   }
 
   public static boolean launcherButVal() {
